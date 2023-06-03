@@ -113,20 +113,6 @@ class Grazer extends Creature
 
     }
 
-    newDirection()
-    {
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-    }
-
     findFields(value)
     {
         this.newDirection();
@@ -264,20 +250,6 @@ class Predator extends Creature
 
         this.energy = 0;
         this.notEatenCounter = 0;
-    }
-
-    newDirection()
-    {
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
     }
 
     findFields(value)
@@ -431,20 +403,6 @@ class PredatorCannibal extends Creature
 
         this.energy = 0;
         this.notEatenCounter = 0;
-    }
-
-    newDirection()
-    {
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
     }
 
     findFields(value)

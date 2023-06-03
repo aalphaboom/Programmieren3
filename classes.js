@@ -1,13 +1,10 @@
-class Grass 
+class Creature
 {
     constructor(x, y)
     {
         //Poition
         this.x = x;
         this.y = y;
-
-        //Farbe
-        this.colorValue = 1;
 
         //Runde
         this.round_counter = 0;
@@ -22,88 +19,6 @@ class Grass
             [this.x,     this.y + 1],
             [this.x + 1, this.y + 1]
         ];
-    }
-
-    findFields()
-    {
-
-        let found = [];
-
-        for(let i = 0; i < this.directions.length; i++)
-        {
-            i = parseInt(i);
-
-            let posArr = this.directions[i];
-
-            let posX = posArr[0];
-            let posY = posArr[1];
-
-            if(posX >= 0 && posX < matrix[0].length && posY >= 0 && posY < matrix.length)
-            {
-                let matrixValue = matrix[posY][posX];
-
-                if(matrixValue == 0)
-                {
-                    found.push(posArr);
-                }
-            }
-            
-            
-        }
-        return found;  
-    }
-
-    multipliy()
-    {
-        this.round_counter++;
-
-        if(this.round_counter > 4)
-        {
-            let emptyFields = this.findFields();
-
-            if(emptyFields.length > 0)
-            {
-                let randPos = random(emptyFields);
-                let newX = randPos[0];
-                let newY = randPos[1];
-
-                matrix[newY][newX] = 1;
-
-                let grObj = new Grass(newX, newY);
-                grassObjekts.push(grObj);
-            }
-            this.round_counter = 0;
-        }
-    }
-}
-
-class Grazer
-{
-    constructor(x, y)
-    {
-        //Poition
-        this.x = x;
-        this.y = y;
-
-        //Farbe
-        this.colorValue = 2;
-
-
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-
-        this.energy = 0;
-        this.notEatenCounter = 0;
-
-        this.round_counter = 0;
     }
 
     newDirection()
@@ -146,8 +61,78 @@ class Grazer
             
             
         }
-        return found;  
+        return found;
     }
+}
+
+
+
+class Grass extends Creature
+{
+    constructor(x, y)
+    {
+        super(x, y);
+        this.colorValue = 1;
+    }
+
+    multipliy()
+    {
+        this.round_counter++;
+
+        if(this.round_counter > 4)
+        {
+            let emptyFields = this.findFields(0);
+
+            if(emptyFields.length > 0)
+            {
+                let randPos = random(emptyFields);
+                let newX = randPos[0];
+                let newY = randPos[1];
+
+                matrix[newY][newX] = 1;
+
+                let grObj = new Grass(newX, newY);
+                grassObjekts.push(grObj);
+            }
+            this.round_counter = 0;
+        }
+    }
+}
+
+class Grazer extends Creature
+{
+    constructor(x, y)
+    {
+        super(x, y);
+
+        //Farbe
+        this.colorValue = 2;
+
+        this.energy = 0;
+        this.notEatenCounter = 0;
+
+    }
+
+    newDirection()
+    {
+        this.directions = [
+            [this.x - 1, this.y - 1],
+            [this.x    , this.y - 1],
+            [this.x + 1, this.y - 1],
+            [this.x - 1, this.y],
+            [this.x + 1, this.y],
+            [this.x - 1, this.y + 1],
+            [this.x,     this.y + 1],
+            [this.x + 1, this.y + 1]
+        ];
+    }
+
+    findFields(value)
+    {
+        this.newDirection();
+        return super.findFields(value);
+    }
+    
 
     eat()
     {
@@ -268,33 +253,17 @@ class Grazer
     }
 }
 
-class Predator
+class Predator extends Creature
 {
     constructor(x, y)
     {
-        //Poition
-        this.x = x;
-        this.y = y;
+        super(x, y);
 
         //Farbe
         this.colorValue = 3;
 
-
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-
         this.energy = 0;
         this.notEatenCounter = 0;
-
-        this.round_counter = 0;
     }
 
     newDirection()
@@ -314,30 +283,7 @@ class Predator
     findFields(value)
     {
         this.newDirection();
-        let found = [];
-
-        for(let i = 0; i < this.directions.length; i++)
-        {
-            i = parseInt(i);
-
-            let posArr = this.directions[i];
-
-            let posX = posArr[0];
-            let posY = posArr[1];
-
-            if(posX >= 0 && posX < matrix[0].length && posY >= 0 && posY < matrix.length)
-            {
-                let matrixValue = matrix[posY][posX];
-
-                if(matrixValue == value)
-                {
-                    found.push(posArr);
-                }
-            }
-            
-            
-        }
-        return found;  
+        return super.findFields(value);
     }
 
     eat()
@@ -448,27 +394,14 @@ class Predator
     }
 }
 
-class Mushroom
+class Mushroom extends Creature
 {
     constructor(x, y)
     {
-        //Poition
-        this.x = x;
-        this.y = y;
+        super(x, y);
 
         //Farbe
         this.colorValue = 5;
-
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
     }
 
     toBeEaten(i)
@@ -487,33 +420,17 @@ class Mushroom
     }
 }
 
-class PredatorCannibal
+class PredatorCannibal extends Creature
 {
     constructor(x, y)
     {
-        //Poition
-        this.x = x;
-        this.y = y;
+        super(x, y);
 
         //Farbe
         this.colorValue = 6;
 
-
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x    , this.y - 1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x,     this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-
         this.energy = 0;
         this.notEatenCounter = 0;
-
-        this.round_counter = 0;
     }
 
     newDirection()
@@ -533,30 +450,7 @@ class PredatorCannibal
     findFields(value)
     {
         this.newDirection();
-        let found = [];
-
-        for(let i = 0; i < this.directions.length; i++)
-        {
-            i = parseInt(i);
-
-            let posArr = this.directions[i];
-
-            let posX = posArr[0];
-            let posY = posArr[1];
-
-            if(posX >= 0 && posX < matrix[0].length && posY >= 0 && posY < matrix.length)
-            {
-                let matrixValue = matrix[posY][posX];
-
-                if(matrixValue == value)
-                {
-                    found.push(posArr);
-                }
-            }
-            
-            
-        }
-        return found;  
+        return super.findFields(value);
     }
 
     eat()

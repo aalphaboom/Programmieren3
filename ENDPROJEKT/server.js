@@ -6,6 +6,16 @@ const Mushroom = require("./creatures/mushroom");
 const PredatorCannibal = require("./creatures/predatorCannibal");
 const random = require("./utils");
 
+const express = require("express");
+const app = express();
+let server = require("http").Server(app);
+const io = require("socket.io")(server);
+
+app.use(express.static("./"));
+app.get("/", function(req, res)
+{
+    res.redirect("client.html");
+})
 
 matrix = [];
 
@@ -112,7 +122,7 @@ function draw()
     {
         for(let x = 0; x < matrix[y].length; x++)
         {
-            console.log(matrix);
+            //console.log(matrix);
         }
     }
 }
@@ -123,3 +133,12 @@ function draw()
 
 initGame();
 setInterval(draw, 400);
+
+
+server.listen(3000, function()
+{
+    initGame();
+    setInterval(draw, 400);
+
+    console.log("Server wurde gestartet und hört auf port 3000");
+});

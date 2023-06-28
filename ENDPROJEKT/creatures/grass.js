@@ -20,7 +20,6 @@ module.exports = class Grass extends Creature
             if(emptyFields.length > 0)
             {
                 let randPos = random(emptyFields);
-                console.log(randPos);
                 let newX = randPos[0];
                 let newY = randPos[1];
 

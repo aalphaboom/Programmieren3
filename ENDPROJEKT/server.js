@@ -17,7 +17,16 @@ app.get("/", function(req, res)
     res.redirect("client.html");
 })
 
+io.on("connection", function(socket){
+    console.log("Client verbunden...", io.engine.clientsCount);
+
+    socket.emit("send matrix", matrix);
+    socket.emit("send matrix sides", side);
+})
+
+
 matrix = [];
+let side = 15;
 
 const grassSpawnRate = 7;
 const grazerSpawnRate = 9;
@@ -56,7 +65,6 @@ function getRandomMatrix(w, h)
 
     return matrix;
 }
-let side = 15;
 
 grassObjekts = [];
 grazerObjekts = [];
@@ -66,6 +74,7 @@ mushroomObjekts = [];
 
 function initGame()
 {
+    console.log("init");
     matrix = getRandomMatrix(4, 6);
 
     for(let y in matrix){
@@ -98,6 +107,7 @@ function initGame()
 
 function draw()
 {
+    console.log("update");
     for(let i = 0; i < grassObjekts.length; i++)
     {
         grassObjekts[i].multipliy();
@@ -131,14 +141,19 @@ function draw()
 /// GAME WIRD GESTARTET////
 ////////////////////////////
 
-initGame();
-setInterval(draw, 400);
-
+if(io.engine.clientsCount === 1)
+{
+    initGame();
+    setInterval(function() {
+        draw();
+        io.socket.emit("send matrix", matrix);
+    }, 1000)
+}
 
 server.listen(3000, function()
 {
-    initGame();
-    setInterval(draw, 400);
-
     console.log("Server wurde gestartet und hört auf port 3000");
 });
+
+
+

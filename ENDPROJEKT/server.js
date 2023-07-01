@@ -17,16 +17,9 @@ app.get("/", function(req, res)
     res.redirect("client.html");
 })
 
-io.on("connection", function(socket){
-    console.log("Client verbunden...", io.engine.clientsCount);
-
-    socket.emit("send matrix", matrix);
-    socket.emit("send matrix sides", side);
-})
-
-
 matrix = [];
 let side = 15;
+let interval = 1000;
 
 const grassSpawnRate = 7;
 const grazerSpawnRate = 9;
@@ -75,7 +68,7 @@ mushroomObjekts = [];
 function initGame()
 {
     console.log("init");
-    matrix = getRandomMatrix(4, 6);
+    matrix = getRandomMatrix(6, 7);
 
     for(let y in matrix){
         y = parseInt(y);
@@ -141,19 +134,56 @@ function draw()
 /// GAME WIRD GESTARTET////
 ////////////////////////////
 
-if(io.engine.clientsCount === 1)
-{
-    initGame();
-    setInterval(function() {
-        draw();
-        io.socket.emit("send matrix", matrix);
-    }, 1000)
-}
+let gameInterval = null;
 
 server.listen(3000, function()
 {
     console.log("Server wurde gestartet und hört auf port 3000");
 });
 
+io.on("connection", function(socket){
+    console.log("Client verbunden...", io.engine.clientsCount);
 
+    if(io.engine.clientsCount === 1)
+    {
+        initGame();
+        gameInterval = setInterval(function() {
+            draw();
+            io.sockets.emit("init matrix", [matrix, side, interval]);
+        }, interval);
+    }else
+    {
+        socket.emit("send matrix", matrix);
+        socket.emit("send matrix sides", side);
+    }
+
+    
+    socket.on("game restart", function(a){
+        for(let y = 0; y < matrix.length; y++)
+        {   
+            for(let x = 0; x < matrix[y].length; x++)
+            {
+                matrix[y][x] = 0;
+            }
+        }
+        initGame();
+        clearInterval();
+        gameInterval = setInterval(function() {
+            draw();
+            io.sockets.emit("init matrix", [matrix, side, interval]);
+        }, interval);
+    });
+    
+
+    socket.on("kill all", function(a){
+        console.log("kill all");
+        for(let y = 0; y < matrix.length; y++)
+        {   
+            for(let x = 0; x < matrix[y].length; x++)
+            {
+                matrix[y][x] = 0;
+            }
+        }
+    })
+})
 

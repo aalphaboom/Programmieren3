@@ -1,5 +1,6 @@
 const Creature = require("./creature");
 const random = require("../utils");
+const Predator = require("./predator");
 
 module.exports = class PredatorCannibal extends Creature
 {

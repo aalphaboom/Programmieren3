@@ -1,5 +1,6 @@
 matrix = [];
 let side;
+let interval;
 
 function main()
 {
@@ -9,23 +10,39 @@ function main()
     socket.on("send matrix", function(newMatrix)
     {
         matrix = newMatrix;
-        console.log(matrix);
-        socket.emit("new matrix request", 1);
     });
     
-    socket.on("send matrix sides", function(matrixSide){
-        side = matrixSide; 
+    socket.on("init matrix", function(matrixData){
+        side = matrixData[1];
+        matrix = matrixData[0];
         resizeCanvas((side * matrix[0].length)+ 1, (side * matrix.length)+ 1);
+        interval = matrixData[2];
     });
+
+    function killAll()
+    {
+        //alert("Kaufen sie die Premium Version für 99.99€ um dieses Ereigniss zu nutzen!");
+        socket.emit("kill all", null);
+        console.log("trying to kill all");
+    }
+    let killAllButton = document.getElementById("killAllButton");
+    killAllButton.onclick = killAll;
+
+    function gameRestart()
+    {
+        socket.emit("game restart", null);
+    }
+    let gameRestartButton = document.getElementById("gameRestartButton");
+    gameRestartButton.onclick = gameRestart;
 }
 
 main();
+
 
 function setup()
 {
     createCanvas(500, 500);
     background("#acacac");
-    frameRate()
 }
 
 function draw()

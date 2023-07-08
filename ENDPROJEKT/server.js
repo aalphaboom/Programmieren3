@@ -156,7 +156,7 @@ function draw() {
             for (let x = 0; x < matrix[y].length; x++) {
                 if (matrix[y][x] == 0) {
                     if (random([0, 1, 2, 3]) == 3) {
-                        grazerObjekts.push(new Grazer(x, y, random(["male", "female"])));
+                        grazerObjekts.push(new Grazer(x, y));
                         matrix[y][x] = 2;
                     }
                 }

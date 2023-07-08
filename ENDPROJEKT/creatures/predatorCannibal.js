@@ -120,7 +120,7 @@ module.exports = class PredatorCannibal extends Creature
 
             let randomNum = Math.floor(Math.random() * 11);
 
-            if(randomNum <= 5)
+            if(randomNum <= 5 || allNewPredatorBecomesCanibal)
             {
                 matrix[newY][newX] = 6;
                 predatorCannibalObjekts.push(new PredatorCannibal(newX, newY));

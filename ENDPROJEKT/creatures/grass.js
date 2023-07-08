@@ -7,13 +7,25 @@ module.exports = class Grass extends Creature
     {
         super(x, y);
         this.colorValue = 1;
+
+        this.propagationSpeed = 4;
     }
 
     multipliy()
     {
         this.round_counter++;
 
-        if(this.round_counter > 4)
+        if(currentWeather == "rainy")
+        {
+            this.propagationSpeed = 3;
+        }else if(currentWeather == "drought")
+        {
+            this.propagationSpeed = 8;
+        }else if(currentWeather == "normal"){
+            this.propagationSpeed = 5;
+        }
+
+        if(this.round_counter > this.propagationSpeed)
         {
             let emptyFields = this.findFields(0);
 

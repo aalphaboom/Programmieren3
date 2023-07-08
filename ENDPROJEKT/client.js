@@ -28,12 +28,28 @@ function main()
     let killAllButton = document.getElementById("killAllButton");
     killAllButton.onclick = killAll;
 
-    function gameRestart()
+    function newPredatorBecomesCannibal()
     {
-        socket.emit("game restart", null);
+        socket.emit("all new predator become cannibal", null)
     }
-    let gameRestartButton = document.getElementById("gameRestartButton");
-    gameRestartButton.onclick = gameRestart;
+    let newPreadatorBecomeCannibalsButton = document.getElementById("newPreadatorBecomeCannibalsButton");
+    newPreadatorBecomeCannibalsButton.onclick = newPredatorBecomesCannibal;
+
+
+    function createNewPreadator()
+    {
+        socket.emit("create new preadator", null);
+    }
+    let createNewPreadatorButton = document.getElementById("createNewPreadatorButton");
+    createNewPreadatorButton.onclick = createNewPreadator;
+
+
+    function createNewGrazer()
+    {
+        socket.emit("create new grazer", null);
+    }
+    let createNewGrazerButton = document.getElementById("createNewGrazerButton");
+    createNewGrazerButton.onclick = createNewGrazer;
 }
 
 main();
@@ -75,7 +91,11 @@ function draw()
             }else if(matrix[y][x] == 6)
             {
                 // dunkles rot
-                fill('#690303')
+                fill('#690303');
+            }else if(matrix[y][x] == 7)
+            {
+                // Zwischen gelb und grün
+                fill("#cfff6e");
             }
             rect(x * side, y * side, side, side);     
         }

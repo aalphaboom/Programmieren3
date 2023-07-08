@@ -4,7 +4,7 @@ const random = require("../utils");
 
 module.exports = class Predator extends Creature
 {
-    constructor(x, y)
+    constructor(x, y, gender)
     {
         super(x, y);
 
@@ -13,6 +13,8 @@ module.exports = class Predator extends Creature
 
         this.energy = 0;
         this.notEatenCounter = 0;
+
+        this.gender = gender;
     }
 
     findFields(value)
@@ -23,7 +25,7 @@ module.exports = class Predator extends Creature
 
     eat()
     {
-        if(this.energy > 3)
+        if((this.energy > 3 && (currentWeather == "normal" || currentWeather == "drought")) || (this.energy > 4 && currentWeather == "rainy"))
         {
             this.multipliy();
         }else{
@@ -99,7 +101,7 @@ module.exports = class Predator extends Creature
 
             let randomNum = Math.floor(Math.random() * 11);
 
-            if(randomNum <= 4)
+            if(randomNum <= 4 || allNewPredatorBecomesCanibal)
             {
                 matrix[newY][newX] = 6;
                 predatorCannibalObjekts.push(new PredatorCannibal(newX, newY));

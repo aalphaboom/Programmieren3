@@ -55,10 +55,20 @@ grazerObjekts = [];
 predatorObjekts = [];
 predatorCannibalObjekts = [];
 mushroomObjekts = [];
+infectedGrazerObjekts = [];
+
+allNewPredatorBecomesCanibal = false;
+
+let createNewPreadator = false;
+let createNewGrazer = false;
+
+weatherRoundCount = 0;
+const weathers = ["normal", "normal", "normal", "rainy", "drought"];
+currentWeather = null;
 
 function initGame() {
-    console.log("init");
-    matrix = getRandomMatrix(6, 7);
+    console.log("Create new game...");
+    matrix = getRandomMatrix(50, 50);
 
     for (let y in matrix) {
         y = parseInt(y);
@@ -82,14 +92,28 @@ function initGame() {
             }
         }
     }
+
+    weatherRoundCount = 0;
+    currentWeather = "normal";
+
+    allNewPredatorBecomesCanibal = false;
 }
 
 
 
 function draw() {
-    console.log("update");
     for (let i = 0; i < grassObjekts.length; i++) {
-        grassObjekts[i].multipliy();
+        if(currentWeather == "drought" && random([0, 1, 2, 3, 4, 5, 6]) == 6)
+        {
+            grassObjekts.splice(i, 1);
+        }else{
+            grassObjekts[i].multipliy();
+        }
+    }
+
+    for(let i = 0; i < mushroomObjekts.length; i++)
+    {
+        mushroomObjekts[i].live();
     }
 
     for (let i = 0; i < grazerObjekts.length; i++) {
@@ -104,25 +128,61 @@ function draw() {
         predatorCannibalObjekts[i].eat();
     }
 
-    for (let y = 0; y < matrix.length; y++) {
-        for (let x = 0; x < matrix[y].length; x++) {
-            //console.log(matrix);
-        }
+    for(let i = 0; i < infectedGrazerObjekts.length; i++){
+        infectedGrazerObjekts[i].eat();
     }
+
+    if (createNewPreadator) {
+        for (let y = 0; y < matrix.length; y++) {
+            for (let x = 0; x < matrix[y].length; x++) {
+                if (matrix[y][x] == 0) {
+                    if (random([0, 1, 2, 3]) == 3) {
+                        if (allNewPredatorBecomesCanibal) {
+                            predatorCannibalObjekts.push(new PredatorCannibal(x, y));
+                            matrix[y][x] = 6;
+                        } else {
+                            predatorObjekts.push(new Predator(x, y));
+                            matrix[y][x] = 3;
+                        }
+                    }
+                }
+            }
+        }
+        createNewPreadator = false;
+    }
+
+    if (createNewGrazer) {
+        for (let y = 0; y < matrix.length; y++) {
+            for (let x = 0; x < matrix[y].length; x++) {
+                if (matrix[y][x] == 0) {
+                    if (random([0, 1, 2, 3]) == 3) {
+                        grazerObjekts.push(new Grazer(x, y, random(["male", "female"])));
+                        matrix[y][x] = 2;
+                    }
+                }
+            }
+        }
+        createNewGrazer = false;
+    }
+
+    if (weatherRoundCount == 10) {
+        currentWeather = random(weathers);
+        console.log("The current wether is: ", currentWeather);
+        weatherRoundCount = (-10);
+    }
+    weatherRoundCount++;
 }
 
 ////////////////////////////
 /// GAME WIRD GESTARTET////
 ////////////////////////////
 
-let gameInterval = null;
-
 server.listen(3000, function () {
     console.log("Server wurde gestartet und hört auf port 3000");
 });
 
 io.on("connection", function (socket) {
-    console.log("Client verbunden...", io.engine.clientsCount);
+    console.log("Client connected...", io.engine.clientsCount);
 
     if (io.engine.clientsCount === 1) {
         initGame();
@@ -135,24 +195,8 @@ io.on("connection", function (socket) {
         socket.emit("send matrix sides", side);
     }
 
-
-    socket.on("game restart", function (a) {
-        for (let y = 0; y < matrix.length; y++) {
-            for (let x = 0; x < matrix[y].length; x++) {
-                matrix[y][x] = 0;
-            }
-        }
-        initGame();
-        clearInterval();
-        gameInterval = setInterval(function () {
-            draw();
-            io.sockets.emit("init matrix", [matrix, side, interval]);
-        }, interval);
-    });
-
-
     socket.on("kill all", function (a) {
-        console.log("kill all");
+        console.log("Player Input: Kill all");
         grassObjekts = [];
         grazerObjekts = [];
         predatorObjekts = [];
@@ -164,6 +208,21 @@ io.on("connection", function (socket) {
 
             }
         }
+    })
+
+    socket.on("all new predator become cannibal", function (a) {
+        allNewPredatorBecomesCanibal = true;
+        console.log("Player Input: All new predator become cannibal");
+    })
+
+    socket.on("create new preadator", function (a) {
+        createNewPreadator = true;
+        console.log("Player Input: Create new predator");
+    });
+
+    socket.on("create new grazer", function(a){
+        createNewGrazer = true;
+        console.log("Player Input: Create new grazer")
     })
 })
 
